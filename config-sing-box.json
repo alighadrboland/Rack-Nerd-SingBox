@@ -1,0 +1,299 @@
+{
+  "log": {
+    "level": "info",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "proxydns",
+        "address": "tls://8.8.8.8/dns-query",
+        "detour": "select"
+      },
+      {
+        "tag": "localdns",
+        "address": "h3://223.5.5.5/dns-query",
+        "detour": "direct"
+      },
+      {
+        "tag": "block",
+        "address": "rcode://refused"
+      },
+      {
+        "tag": "dns_fakeip",
+        "address": "fakeip"
+      }
+    ],
+    "rules": [
+      {
+        "outbound": "any",
+        "server": "localdns",
+        "disable_cache": true
+      },
+      {
+        "clash_mode": "Global",
+        "server": "proxydns"
+      },
+      {
+        "clash_mode": "Direct",
+        "server": "localdns"
+      },
+      {
+        "rule_set": "geosite-cn",
+        "server": "localdns"
+      },
+      {
+        "rule_set": "geosite-geolocation-!cn",
+        "server": "proxydns"
+      },
+      {
+        "query_type": [
+          "A",
+          "AAAA"
+        ],
+        "rule_set": "geosite-geolocation-!cn",
+        "server": "dns_fakeip"
+      }
+    ],
+    "final": "proxydns",
+    "fakeip": {
+      "enabled": true,
+      "inet4_range": "198.18.0.0/15",
+      "inet6_range": "fc00::/18"
+    },
+    "independent_cache": true
+  },
+  "ntp": {
+    "enabled": true,
+    "interval": "30m0s",
+    "server": "time.apple.com",
+    "server_port": 123,
+    "detour": "direct"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "auto_route": true,
+      "strict_route": true,
+      "sniff": true,
+      "sniff_override_destination": true,
+      "domain_strategy": "prefer_ipv4",
+      "inet4_address": "172.19.0.1/30",
+      "inet6_address": "fd00::1/126"
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "selector",
+      "tag": "select",
+      "outbounds": [
+        "auto",
+        "vless-tcp-reality",
+        "vmess-sb",
+        "vmess-ws-+ARGO-Tunnel",
+        "hy2-sb",
+        "tuic5-sb"
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "vless",
+      "tag": "vless-tcp-reality",
+      "server": "107.175.222.10",
+      "server_port": 53375,
+      "uuid": "c0c36b36-d292-492a-b65e-90a7528c3f3e",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.yahoo.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "G6_XSR03AplL9SVob695Ch8Rku3VYCX9RrlUIibgXGI",
+          "short_id": "fafbaab7de3aee22"
+        }
+      }
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-sb",
+      "server": "107.175.222.10",
+      "server_port": 2053,
+      "uuid": "c0c36b36-d292-492a-b65e-90a7528c3f3e",
+      "security": "auto",
+      "tls": {
+        "server_name": "107.175.222.10",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "c0c36b36-d292-492a-b65e-90a7528c3f3e",
+        "headers": {
+          "Host": "107.175.222.10"
+        }
+      }
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-ws-+ARGO-Tunnel",
+      "server": "104.31.16.60",
+      "server_port": 443,
+      "uuid": "c0c36b36-d292-492a-b65e-90a7528c3f3e",
+      "security": "auto",
+      "tls": {
+        "enabled": true,
+        "server_name": "bloomberg-trainer-adam-bible.trycloudflare.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "c0c36b36-d292-492a-b65e-90a7528c3f3e",
+        "headers": {
+          "Host": "bloomberg-trainer-adam-bible.trycloudflare.com"
+        }
+      }
+    },
+    {
+      "type": "hysteria2",
+      "tag": "hy2-sb",
+      "server": "107.175.222.10",
+      "server_port": 2404,
+      "obfs": {
+	    "type": "salamander",
+	    "password": "c0c36b36-d292-492a-b65e-90a7528c3f3e"
+	  },
+      "password": "c0c36b36-d292-492a-b65e-90a7528c3f3e",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.bing.com",
+        "insecure": true,
+        "alpn": "h3"
+      }
+    },
+    {
+      "type": "tuic",
+      "tag": "tuic5-sb",
+      "server": "107.175.222.10",
+      "server_port": 11581,
+      "uuid": "c0c36b36-d292-492a-b65e-90a7528c3f3e",
+      "password": "c0c36b36-d292-492a-b65e-90a7528c3f3e",
+      "congestion_control": "bbr",
+      "udp_relay_mode": "native",
+      "heartbeat": "10s",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.bing.com",
+        "insecure": true,
+        "alpn": "h3"
+      }
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    },
+    {
+      "type": "dns",
+      "tag": "dns-out"
+    },
+    {
+      "type": "urltest",
+      "tag": "auto",
+      "outbounds": [
+        "vless-tcp-reality",
+        "vmess-sb",
+        "vmess-ws-+ARGO-Tunnel",
+        "hy2-sb",
+        "tuic5-sb"
+      ],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "1m0s",
+      "tolerance": 50
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "protocol": "dns",
+        "outbound": "dns-out"
+      },
+      {
+        "clash_mode": "Direct",
+        "outbound": "direct"
+      },
+      {
+        "clash_mode": "Global",
+        "outbound": "select"
+      },
+      {
+        "rule_set": "geoip-cn",
+        "outbound": "direct"
+      },
+      {
+        "rule_set": "geosite-cn",
+        "outbound": "direct"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      },
+      {
+        "rule_set": "geosite-geolocation-!cn",
+        "outbound": "select"
+      }
+    ],
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "geosite-geolocation-!cn",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
+        "download_detour": "select",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-cn",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-cn.srs",
+        "download_detour": "select",
+        "update_interval": "24h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "geoip-cn",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
+        "download_detour": "select",
+        "update_interval": "24h0m0s"
+      }
+    ],
+    "final": "select",
+    "auto_detect_interface": true
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "path": "cache.db",
+      "store_fakeip": true
+    },
+    "clash_api": {
+      "external_controller": "127.0.0.1:9090",
+      "external_ui": "ui",
+      "default_mode": "Rule"
+    }
+  }
+}
